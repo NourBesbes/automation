@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# Instagram session (contains sensitive data)
+session.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Keep output folder but ignore contents
+output/*
+!output/.gitkeep
+
+# Environment variables
+.venv
