@@ -41,6 +41,8 @@ jobs:
         env:
           IG_USERNAME: ${{ secrets.IG_USERNAME }}
           IG_PASSWORD: ${{ secrets.IG_PASSWORD }}
+          IG_SESSION: ${{ secrets.IG_SESSION }}    
+
         run: |
           if [ "${{ inputs.dry_run }}" == "true" ]; then
             python src/main.py --dry-run
