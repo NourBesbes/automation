@@ -1,46 +1,46 @@
 """
 Configuration settings for Instagram Automation
-Adjust these values based on your template design
+Support pour contenu arabe (RTL)
 """
 
 from pathlib import Path
 
 # === PATHS ===
-BASE_DIR = Path(__file__).parent.parent
-TEMPLATE_PATH = BASE_DIR / "templates" / "template.png"
-QUOTES_CSV_PATH = BASE_DIR / "data" / "quotes.csv"
-OUTPUT_DIR = BASE_DIR / "output"
-FONTS_DIR = BASE_DIR / "fonts"
+BASE_DIR = Path(__file__).parent
+TEMPLATE_PATH = BASE_DIR.parent / "templates" / "template.png"
+QUOTES_CSV_PATH = BASE_DIR.parent / "data" / "quotes.csv"
+OUTPUT_DIR = BASE_DIR.parent / "output"
+FONTS_DIR = BASE_DIR.parent / "fonts"
 
-# === FONTS ===
-FONT_QUOTE = FONTS_DIR / "Montserrat-Bold.ttf"
-FONT_DATE = FONTS_DIR / "Montserrat-Medium.ttf"
+# === FONTS (Arabe) ===
+FONT_QUOTE = FONTS_DIR / "Amiri-Bold.ttf"       # Police arabe pour citations
+FONT_DATE = FONTS_DIR / "Amiri-Bold.ttf"     # Police arabe pour date
 
 # === TEXT POSITIONING ===
-# Adjust these based on your template (use position_helper.py)
 TEXT_CONFIG = {
     "quote": {
-        "position": (540, 450),      # Center point (x, y)
-        "font_size": 48,
-        "color": "#FFFFFF",          # White
-        "shadow_color": "#000000",   # Black
-        "shadow_offset": 3,
-        "max_width": 30,             # Characters per line
-        "line_spacing": 15
+        "position": (540, 480),      # Centre de l'image
+        "font_size": 56,             # Un peu plus petit pour l'arabe
+        "color": "#141313",
+        "max_width": 35,             # Caractères par ligne
+        "line_spacing": 20,          # Plus d'espace pour l'arabe
+        "rtl": True,                  # Right-to-Left pour l'arabe
+        "shadow_color": None,
+        "shadow_offset": 0,
     },
     "date": {
-        "position": (640, 220),       # Top center
-        "font_size": 40,
-        "color": "#FFD700",          # Gold
-        "format": "%B %d, %Y"        # June 13, 2025
+        "position": (540, 200),      # Centre-bas (changé pour RTL)
+        "font_size": 60,
+        "color": "#169485",
+        "rtl": True
     }
 }
 
 # === INSTAGRAM ===
 HASHTAGS = """
-#DataScience #MachineLearning #AI #Python 
-#DataAnalytics #Tech #Innovation #LearnToCode
-#ArtificialIntelligence #BigData
+#تنمية_ذاتية #تطوير_الذات #اقتباسات #حكم
+#تحفيز #إيجابية #نجاح #تفاؤل
+#اقتباسات_عربية #حكمة_اليوم
 """
 
 # === IMAGE SETTINGS ===

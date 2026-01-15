@@ -52,5 +52,5 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add data/quotes.csv
           git add images/
-          git diff --staged --quiet || git commit -m "📸 Posted: $(date +'%Y-%m-%d')"
+          git diff --staged --quiet || git commit -m "📸 Posted: $(date +'%Y-%m-%d %H:%M:%S')"
           git push

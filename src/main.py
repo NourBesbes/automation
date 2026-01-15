@@ -1,5 +1,5 @@
 """
-Main orchestrator - Using Graph API
+Main orchestrator - Support Arabe
 """
 
 import sys
@@ -17,27 +17,27 @@ from config import HASHTAGS
 
 def run_daily_post(dry_run: bool = False):
     """
-    Main function to run daily posting workflow
+    Main function pour publication quotidienne
     """
     print("=" * 50)
-    print("🚀 Instagram Automation Starting...")
+    print("🚀 Démarrage Automation Instagram...")
     print("=" * 50)
     
-    # Step 1: Get today's content
-    print("\n📋 Step 1: Loading content...")
+    # Étape 1: Charger le contenu
+    print("\n📋 Étape 1: Chargement du contenu...")
     content_mgr = ContentManager()
     quote = content_mgr.get_today_quote()
     
     if quote is None:
-        print("❌ No content available for today!")
-        print("💡 Add more quotes to your CSV file.")
+        print("❌ Pas de contenu disponible!")
+        print("💡 Ajoutez plus de citations dans votre CSV.")
         return False
     
     print(f"   Date: {quote['date']}")
-    print(f"   Quote: {quote['content'][:50]}...")
+    print(f"   Citation: {quote['content'][:50]}...")
     
-    # Step 2: Generate image
-    print("\n🎨 Step 2: Generating image...")
+    # Étape 2: Générer l'image
+    print("\n🎨 Étape 2: Génération de l'image...")
     generator = ImageGenerator()
     image_path = generator.generate(
         quote_text=quote["content"],
@@ -45,31 +45,31 @@ def run_daily_post(dry_run: bool = False):
     )
     
     if dry_run:
-        print("\n🧪 DRY RUN - Skipping Instagram post")
-        print(f"   Image ready at: {image_path}")
+        print("\n🧪 MODE TEST - Publication Instagram ignorée")
+        print(f"   Image prête: {image_path}")
         return True
     
-    # Step 3: Upload image to GitHub
-    print("\n☁️  Step 3: Uploading image...")
+    # Étape 3: Upload de l'image
+    print("\n☁️  Étape 3: Upload de l'image...")
     uploader = GitHubImageUploader()
     image_url = uploader.upload(image_path)
     
-    # Step 4: Post to Instagram
-    print("\n📱 Step 4: Posting to Instagram...")
+    # Étape 4: Publier sur Instagram
+    print("\n📱 Étape 4: Publication sur Instagram...")
     instagram = InstagramGraphAPI()
     
     caption = f"💡 {quote['content']}\n\n{HASHTAGS}"
     instagram.post_with_retry(image_url, caption)
     
-    # Step 5: Mark as posted
-    print("\n✏️  Step 5: Updating records...")
+    # Étape 5: Marquer comme publié
+    print("\n✏️  Étape 5: Mise à jour des enregistrements...")
     content_mgr.mark_as_posted(quote["index"])
     
-    # Summary
+    # Résumé
     print("\n" + "=" * 50)
-    print("✅ COMPLETED SUCCESSFULLY!")
+    print("✅ TERMINÉ AVEC SUCCÈS!")
     stats = content_mgr.get_stats()
-    print(f"📊 Progress: {stats['posted']}/{stats['total']} posted ({stats['progress']})")
+    print(f"📊 Progression: {stats['posted']}/{stats['total']} publiées ({stats['progress']})")
     print("=" * 50)
     
     return True
@@ -78,11 +78,11 @@ def run_daily_post(dry_run: bool = False):
 if __name__ == "__main__":
     import argparse
     
-    parser = argparse.ArgumentParser(description="Instagram Automation")
+    parser = argparse.ArgumentParser(description="Instagram Automation Arabe")
     parser.add_argument(
         "--dry-run", 
         action="store_true",
-        help="Generate image but don't post"
+        help="Générer l'image sans publier"
     )
     
     args = parser.parse_args()
