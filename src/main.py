@@ -1,5 +1,5 @@
 """
-Main orchestrator - ties everything together
+Main orchestrator - Using Graph API
 """
 
 import sys
@@ -10,15 +10,14 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 from src.content_manager import ContentManager
 from src.image_generator import ImageGenerator
-from src.instagram_poster import InstagramPoster
+from src.instagram_graph_api import InstagramGraphAPI
+from src.image_uploader import GitHubImageUploader
+from config import HASHTAGS
 
 
 def run_daily_post(dry_run: bool = False):
     """
     Main function to run daily posting workflow
-    
-    Args:
-        dry_run: If True, generate image but don't post
     """
     print("=" * 50)
     print("🚀 Instagram Automation Starting...")
@@ -45,20 +44,26 @@ def run_daily_post(dry_run: bool = False):
         quote_date=quote["date"]
     )
     
-    # Step 3: Post to Instagram
     if dry_run:
-        print("\n🧪 Step 3: DRY RUN - Skipping Instagram post")
+        print("\n🧪 DRY RUN - Skipping Instagram post")
         print(f"   Image ready at: {image_path}")
-    else:
-        print("\n📱 Step 3: Posting to Instagram...")
-        poster = InstagramPoster()
-        
-        caption = f"💡 {quote['content'][:100]}"
-        poster.post_with_retry(image_path, caption)
-        
-        # Step 4: Mark as posted
-        print("\n✏️  Step 4: Updating records...")
-        content_mgr.mark_as_posted(quote["index"])
+        return True
+    
+    # Step 3: Upload image to GitHub
+    print("\n☁️  Step 3: Uploading image...")
+    uploader = GitHubImageUploader()
+    image_url = uploader.upload(image_path)
+    
+    # Step 4: Post to Instagram
+    print("\n📱 Step 4: Posting to Instagram...")
+    instagram = InstagramGraphAPI()
+    
+    caption = f"💡 {quote['content']}\n\n{HASHTAGS}"
+    instagram.post_with_retry(image_url, caption)
+    
+    # Step 5: Mark as posted
+    print("\n✏️  Step 5: Updating records...")
+    content_mgr.mark_as_posted(quote["index"])
     
     # Summary
     print("\n" + "=" * 50)
@@ -70,12 +75,6 @@ def run_daily_post(dry_run: bool = False):
     return True
 
 
-def test_pipeline():
-    """Test the entire pipeline without posting"""
-    print("🧪 Running pipeline test (dry run)...\n")
-    run_daily_post(dry_run=True)
-
-
 if __name__ == "__main__":
     import argparse
     
@@ -83,17 +82,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dry-run", 
         action="store_true",
-        help="Generate image but don't post to Instagram"
-    )
-    parser.add_argument(
-        "--test",
-        action="store_true", 
-        help="Run full pipeline test"
+        help="Generate image but don't post"
     )
     
     args = parser.parse_args()
-    
-    if args.test:
-        test_pipeline()
-    else:
-        run_daily_post(dry_run=args.dry_run)
+    run_daily_post(dry_run=args.dry_run)
