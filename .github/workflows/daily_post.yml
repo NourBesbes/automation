@@ -9,7 +9,7 @@ on:
       dry_run:
         description: 'Dry run (no posting)'
         required: false
-        default: false
+        default: 'false'
         type: boolean
 
 jobs:
@@ -23,12 +23,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main
           fetch-depth: 0
-      
-      - name: Pull latest changes
-        run: |
-          git pull origin main --rebase || true
       
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -56,19 +52,15 @@ jobs:
       
       - name: Commit and push changes
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
           
-          # Pull any new changes first
-          git pull origin main --rebase || true
+          git add -A
           
-          # Add files
-          git add data/quotes.csv || true
-          git add images/ || true
-          git add output/ || true
-          
-          # Commit if there are changes
-          git diff --staged --quiet || git commit -m "📸 Posted: $(date +'%Y-%m-%d')"
-          
-          # Push with retry
-          git push origin main || (git pull origin main --rebase && git push origin main)
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "📸 Posted: $(date +'%Y-%m-%d')"
+            git pull --rebase origin main
+            git push origin main
+          fi
