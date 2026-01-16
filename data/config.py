@@ -13,8 +13,8 @@ OUTPUT_DIR = BASE_DIR / "output"
 FONTS_DIR = BASE_DIR / "fonts"
 
 # === FONTS ===
-FONT_QUOTE = FONTS_DIR / "Montserrat-Bold.ttf"
-FONT_DATE = FONTS_DIR / "Montserrat-Medium.ttf"
+FONT_QUOTE = FONTS_DIR / "Amiri-Bold.ttf.ttf"
+FONT_DATE = FONTS_DIR / "Amiri-Bold.ttf.ttf"
 
 # === TEXT POSITIONING ===
 # Adjust these based on your template (use position_helper.py)
