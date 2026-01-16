@@ -45,7 +45,6 @@ jobs:
           else
             python src/main.py
           fi
-      
       - name: Commit changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
@@ -53,4 +52,5 @@ jobs:
           git add data/quotes.csv
           git add images/
           git diff --staged --quiet || git commit -m "📸 Posted: $(date +'%Y-%m-%d %H:%M:%S')"
+          git pull --rebase origin main
           git push
