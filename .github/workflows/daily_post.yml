@@ -2,7 +2,7 @@ name: Daily Instagram Post
 
 on:
   schedule:
-    - cron: '0 9 * * *'  # 9 AM UTC daily
+    - cron: '0 8 * * *'
   
   workflow_dispatch:
     inputs:
@@ -17,13 +17,18 @@ jobs:
     runs-on: ubuntu-latest
     
     permissions:
-      contents: write  # Needed for image upload
+      contents: write
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Récupère tout l'historique
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: Pull latest changes
+        run: |
+          git pull origin main --rebase || true
       
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -41,18 +46,29 @@ jobs:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           IG_BUSINESS_ID: ${{ secrets.IG_BUSINESS_ID }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
           if [ "${{ inputs.dry_run }}" == "true" ]; then
             python src/main.py --dry-run
           else
             python src/main.py
           fi
-      - name: Commit changes
+      
+      - name: Commit and push changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/quotes.csv
-          git add images/
-          git diff --staged --quiet || git commit -m "📸 Posted: $(date +'%Y-%m-%d %H:%M:%S')"
-          git pull --rebase origin main
-          git push
+          
+          # Pull any new changes first
+          git pull origin main --rebase || true
+          
+          # Add files
+          git add data/quotes.csv || true
+          git add images/ || true
+          git add output/ || true
+          
+          # Commit if there are changes
+          git diff --staged --quiet || git commit -m "📸 Posted: $(date +'%Y-%m-%d')"
+          
+          # Push with retry
+          git push origin main || (git pull origin main --rebase && git push origin main)
