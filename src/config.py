@@ -6,11 +6,11 @@ Support pour contenu arabe (RTL)
 from pathlib import Path
 
 # === PATHS ===
-BASE_DIR = Path(__file__).parent
-TEMPLATE_PATH = BASE_DIR.parent / "templates" / "template.png"
-QUOTES_CSV_PATH = BASE_DIR.parent / "data" / "quotes.csv"
-OUTPUT_DIR = BASE_DIR.parent / "output"
-FONTS_DIR = BASE_DIR.parent / "fonts"
+BASE_DIR = Path(__file__).parent.parent
+TEMPLATE_PATH = BASE_DIR / "templates" / "template.png"
+QUOTES_CSV_PATH = BASE_DIR / "data" / "quotes.csv"
+OUTPUT_DIR = BASE_DIR / "output"
+FONTS_DIR = BASE_DIR / "fonts"
 
 # === FONTS (Arabe) ===
 FONT_QUOTE = FONTS_DIR / "Amiri-Bold.ttf"       # Police arabe pour citations
