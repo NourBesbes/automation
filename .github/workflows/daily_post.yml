@@ -26,15 +26,25 @@ jobs:
           ref: main
           fetch-depth: 0
           
-      - name: Install Arabic fonts
+      - name: Verify fonts exist
         run: |
-          sudo apt-get update
-          sudo apt-get install -y fonts-noto-core fonts-noto-extra fonts-amiri
-          fc-cache -f -v
+          echo "📁 Vérification des polices locales..."
+          ls -la fonts/
           
-          # Vérifier les polices installées
-          fc-list | grep -i "amiri\|noto.*arab" || echo "Fonts installed"
-      
+          if [ -f "fonts/Amiri-Bold.ttf" ]; then
+            echo "✅ Amiri-Bold.ttf trouvé"
+          else
+            echo "❌ Amiri-Bold.ttf MANQUANT!"
+            exit 1
+          fi
+          
+          if [ -f "fonts/Amiri-Regular.ttf" ]; then
+            echo "✅ Amiri-Regular.ttf trouvé"
+          else
+            echo "❌ Amiri-Regular.ttf MANQUANT!"
+            exit 1
+          fi
+          
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
