@@ -35,7 +35,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          pip install pillow pandas requests
+          pip install arabic-reshaper python-bidi
           pip install -r requirements.txt
+
+          # Vérifier que les packages arabes sont installés
+          python -c "import arabic_reshaper; print('✅ arabic-reshaper OK')"
+          python -c "from bidi.algorithm import get_display; print('✅ python-bidi OK')"
       
       - name: Run daily post
         env:
