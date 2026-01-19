@@ -1,13 +1,12 @@
 """
 Generates Instagram images with Arabic text (RTL support)
-Optimisé pour le public tunisien - VERSION CORRIGÉE
+Optimisé pour le public tunisien -
 """
 
 from PIL import Image, ImageDraw, ImageFont
 from datetime import date
 from pathlib import Path
 import sys
-import textwrap
 
 # Support RTL arabe - OBLIGATOIRE
 try:
@@ -42,33 +41,23 @@ class ImageGenerator:
     def _reshape_arabic(self, text: str) -> str:
         """
         Reshape le texte arabe pour affichage correct
-        Cette fonction doit être appelée sur le texte FINAL avant dessin
         """
-        # Configuration du reshaper pour meilleure compatibilité
-        configuration = {
-            'delete_harakat': False,
-            'support_ligatures': True,
-            'RIAL SIGN': True,
-        }
-        
-        reshaped = arabic_reshaper.reshape(text, configuration)
+        reshaped = arabic_reshaper.reshape(text)
         bidi_text = get_display(reshaped)
         return bidi_text
     
     def _wrap_text_arabic(self, text: str, font: ImageFont.FreeTypeFont, max_width: int) -> list:
         """
         Découpe le texte en lignes qui tiennent dans max_width pixels
-        Retourne les lignes NON reshapées (on reshape après)
         """
         words = text.split()
         lines = []
         current_line = []
         
         for word in words:
-            # Teste si le mot tient sur la ligne actuelle
             test_line = ' '.join(current_line + [word])
             
-            # Pour mesurer, on doit reshaper temporairement
+            # Mesurer avec reshape
             test_reshaped = self._reshape_arabic(test_line)
             bbox = font.getbbox(test_reshaped)
             line_width = bbox[2] - bbox[0]
@@ -96,7 +85,7 @@ class ImageGenerator:
         img = Image.open(self.template_path).copy()
         draw = ImageDraw.Draw(img)
         
-        # Calculer la largeur max pour le texte (80% de l'image)
+        # Largeur max pour le texte (85% de l'image)
         img_width = img.size[0]
         max_text_width = int(img_width * 0.85)
         
@@ -122,7 +111,7 @@ class ImageGenerator:
         """Dessine la citation arabe centrée"""
         config = self.quote_config
         
-        # Découper en lignes (texte original, pas reshapé)
+        # Découper en lignes
         lines = self._wrap_text_arabic(text, self.font_quote, max_width)
         print(f"   Nombre de lignes: {len(lines)}")
         
@@ -134,17 +123,17 @@ class ImageGenerator:
         start_y = config["position"][1] - (total_height // 2)
         
         for i, line in enumerate(lines):
-            # RESHAPER la ligne complète maintenant
+            # Reshaper la ligne complète
             display_line = self._reshape_arabic(line)
             print(f"   Ligne {i+1}: '{line[:40]}...'")
             
-            # Calculer position X (centré horizontalement)
+            # Centrer horizontalement
             bbox = self.font_quote.getbbox(display_line)
             line_width = bbox[2] - bbox[0]
             x = config["position"][0] - (line_width // 2)
             y = start_y + (i * line_height)
             
-            # Dessiner l'ombre
+            # Ombre
             shadow_offset = config["shadow_offset"]
             draw.text(
                 (x + shadow_offset, y + shadow_offset),
@@ -153,7 +142,7 @@ class ImageGenerator:
                 fill=config["shadow_color"]
             )
             
-            # Dessiner le texte principal
+            # Texte principal
             draw.text(
                 (x, y),
                 display_line,
@@ -178,26 +167,25 @@ class ImageGenerator:
             4: "الجمعة", 5: "السبت", 6: "الأحد"
         }
         
-        # Construire la date (chiffres normaux pour style tunisien)
+        # Construire la date
         day_name = arabic_days[quote_date.weekday()]
         day_num = quote_date.day
         month_name = tunisian_months[quote_date.month]
         year = quote_date.year
         
         date_text = f"{day_name} {day_num} {month_name} {year}"
-        print(f"📅 Date originale: {date_text}")
+        print(f"📅 Date: {date_text}")
         
-        # Reshaper la date
+        # Reshaper
         display_date = self._reshape_arabic(date_text)
-        print(f"📅 Date reshapée: {display_date}")
         
-        # Centrer la date
+        # Centrer
         bbox = self.font_date.getbbox(display_date)
         text_width = bbox[2] - bbox[0]
         x = config["position"][0] - (text_width // 2)
         y = config["position"][1]
         
-        # Dessiner avec ombre
+        # Dessiner
         draw.text((x + 2, y + 2), display_date, font=self.font_date, fill="#000000")
         draw.text((x, y), display_date, font=self.font_date, fill=config["color"])
 
